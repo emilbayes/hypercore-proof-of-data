@@ -4,7 +4,7 @@ We want a peer to prove that they "know" a block of data. By "know" we mean that
 they somehow have access to the data. We cannot guarantee that they have a local
 physical copy, but by playing this game, we can ensure that they can quickly
 access the data. Their best long-term play is to have the data stored locally,
-when interrogated over a long period of time.
+when questioned over a long period of time for random blocks.
 
 ## Properties
 
@@ -33,7 +33,8 @@ challenge with another peer's public key.
 
 ### Challenge
 
-1. Send `{index, nonce}`
+1. Send `{index, nonce}`, where `index` is a random block we believe the peer
+   has and `nonce` is random bytes
 2. Compute `solution = Blake2b(nonce || PK || data)`
 3. Compute `signature = EdDSASign(SK, solution)`, where `EdDSASign(key, data)`
 3. Reply `{signature}`
