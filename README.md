@@ -35,13 +35,13 @@ challenge with another peer's public key.
 
 1. Send `{index, nonce}`, where `index` is a random block we believe the peer
    has and `nonce` is random bytes
-2. Compute `solution = Blake2b(nonce || PK || data)`
+2. Compute `solution = Blake2b(nonce, PK || data)` where `Blake2b(key, data)`
 3. Compute `signature = EdDSASign(SK, solution)`, where `EdDSASign(key, data)`
 3. Reply `{signature}`
 
 ### Verify
 
-1. Compute `localSolution = Blake2b(nonce || peerPK, data)`
+1. Compute `localSolution = Blake2b(nonce, peerPK || data)`
 2. Check `EdDSAVerify(peerPK, localSolution, peerSignature)`.
 
 ### Issues
@@ -53,6 +53,13 @@ challenge with another peer's public key.
   the forwarder's public key. This means they can lead a honest peer to believe
   that N peers have the data / there are N copies of the data.
   In fact M peers can get away with 1 copy divided into N / M pieces
+  This is attempted mitigated by using signatures and mixing in the Public Key
+  of a peer
+* Making a peer's public key valuable. If the public key that a peer uses has no
+  value, there's no cost in sharing it with multiple peers, making the above
+  attack risk free. Somehow trust needs to built up around the public key and in
+  a way that sharing the secret key would be devastating to the peer.
 * A peer may fetch the data as they are requested to solve a challenge. This may
   be possible to mitigate by setting a low timeout, but with the risk of failing
   a peer due to high latency
+* Correlate asks and challenges and dissallow `download` (only `upload`)
